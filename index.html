@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ПЛАН НУРЛАНА 2026 • Боевой Микс</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', system_ui, sans-serif; }
+        .neon-green { text-shadow: 0 0 10px #22ff88; }
+        .modal { animation: modalPop 0.3s ease-out; }
+        @keyframes modalPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .heatmap-cell { transition: all 0.2s; }
+        .heatmap-cell:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white min-h-screen">
+
+    <!-- NAVBAR -->
+    <nav class="bg-black border-b border-red-600 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-red-600 rounded-xl flex items-center justify-center text-2xl">🥋</div>
+                <h1 class="text-2xl font-bold tracking-tighter neon-green">ПЛАН НУРЛАНА 2026</h1>
+            </div>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+                <a href="#main" class="hover:text-red-400 transition">Главная</a>
+                <a href="#schedule" class="hover:text-red-400 transition">Расписание</a>
+                <a href="#trainings" class="hover:text-red-400 transition">Тренировки</a>
+                <a href="#infographics" class="hover:text-red-400 transition">Инфографика</a>
+                <a href="#progress" class="hover:text-red-400 transition">Прогресс</a>
+            </div>
+            <button onclick="startWorkout()" 
+                    class="bg-red-600 hover:bg-red-500 px-6 py-2.5 rounded-2xl font-semibold flex items-center gap-2 transition">
+                <span>НАЧАТЬ ТРЕНИРОВКУ СЕГОДНЯ</span>
+                <span class="text-xl">▶️</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section id="main" class="max-w-7xl mx-auto px-6 pt-16 pb-20">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="inline-flex items-center gap-2 bg-zinc-900 border border-red-600 rounded-3xl px-6 py-2 text-sm mb-6">
+                    24 года • 174 см • 94 кг • Средний уровень
+                </div>
+                <h1 class="text-6xl md:text-7xl font-bold leading-none tracking-tighter mb-4">
+                    ТВОЙ БОЕВОЙ<br>ПЛАН НА 4 ДНЯ
+                </h1>
+                <p class="text-2xl text-zinc-400 mb-8">
+                    Калистеника • Изометрия • Взрыв • Гибкость •<br>
+                    Каратэ + Муай-тай + BJJ + Крав-мага + CQC
+                </p>
+                <div class="flex gap-4">
+                    <button onclick="startWorkout()" 
+                            class="bg-gradient-to-r from-red-600 to-red-500 px-10 py-4 rounded-3xl text-xl font-semibold hover:scale-105 transition">
+                        Начать тренировку
+                    </button>
+                    <button onclick="downloadPDF()" 
+                            class="border border-zinc-400 hover:border-white px-8 py-4 rounded-3xl text-xl font-medium flex items-center gap-3 transition">
+                        Скачать PDF
+                    </button>
+                </div>
+                <p class="text-zinc-500 mt-6 text-sm">Обновлено: 17 апреля 2026 • 4 тренировки в неделю • 55–70 мин</p>
+            </div>
+            <div class="relative">
+                <div class="bg-zinc-900 rounded-3xl p-8 shadow-2xl border border-red-600/30">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">🥋</div>
+                        <p class="text-red-400 text-2xl font-medium">Сегодня: Четверг</p>
+                        <p class="text-4xl font-bold mt-2">День 2 — Взрывная сила</p>
+                        <div class="mt-8 h-2 bg-zinc-800 rounded-2xl overflow-hidden">
+                            <div class="h-2 w-3/4 bg-green-400 rounded-2xl"></div>
+                        </div>
+                        <p class="text-sm text-zinc-400 mt-2">Готовность: 92%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- РАСПИСАНИЕ -->
+    <section id="schedule" class="bg-zinc-900 py-16">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-4xl font-bold mb-8">Расписание недели</h2>
+            <div class="grid grid-cols-2 md:grid-cols-7 gap-4" id="week-grid">
+                <!-- Заполняется JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ТРЕНИРОВКИ -->
+    <section id="trainings" class="max-w-7xl mx-auto px-6 py-16">
+        <h2 class="text-4xl font-bold mb-8">Твои тренировки</h2>
+        <div class="flex border-b border-zinc-700 mb-8" id="training-tabs">
+            <button onclick="showDay(1)" class="tab-btn active px-8 py-4 text-lg font-medium border-b-2 border-red-500">День 1 • Вт</button>
+            <button onclick="showDay(2)" class="tab-btn px-8 py-4 text-lg font-medium">День 2 • Чт</button>
+            <button onclick="showDay(3)" class="tab-btn px-8 py-4 text-lg font-medium">День 3 • Сб</button>
+            <button onclick="showDay(4)" class="tab-btn px-8 py-4 text-lg font-medium">День 4 • Вс</button>
+        </div>
+        
+        <div id="day-content" class="bg-zinc-900 rounded-3xl p-8"></div>
+    </section>
+
+    <!-- ИНФОГРАФИКА -->
+    <section id="infographics" class="bg-black py-16">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-4xl font-bold mb-12 text-center">Инфографика и статистика</h2>
+            
+            <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
+                <!-- 1. Что развиваем -->
+                <div class="bg-zinc-900 rounded-3xl p-8">
+                    <h3 class="text-xl font-semibold mb-6">Что развиваем за неделю</h3>
+                    <canvas id="chart1" class="h-64"></canvas>
+                </div>
+                
+                <!-- 2. Микс боевых -->
+                <div class="bg-zinc-900 rounded-3xl p-8">
+                    <h3 class="text-xl font-semibold mb-6">Микс боевых искусств</h3>
+                    <canvas id="chart2" class="h-64"></canvas>
+                </div>
+                
+                <!-- 3. Прогресс-бары -->
+                <div class="bg-zinc-900 rounded-3xl p-8">
+                    <h3 class="text-xl font-semibold mb-6">Твой прогресс (редактируй)</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between text-sm mb-2"><span>Подтягивания</span><span id="pull-val">8 / 15</span></div>
+                            <input type="range" min="1" max="20" value="8" id="pull-slider" class="w-full accent-red-500" oninput="updateProgress()">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-2"><span>L-sit (сек)</span><span id="lsit-val">25 / 60</span></div>
+                            <input type="range" min="10" max="90" value="25" id="lsit-slider" class="w-full accent-red-500" oninput="updateProgress()">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-2"><span>Высота high kick (см)</span><span id="kick-val">120 / 180</span></div>
+                            <input type="range" min="80" max="200" value="120" id="kick-slider" class="w-full accent-red-500" oninput="updateProgress()">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-2"><span>Shrimp escape (сек)</span><span id="shrimp-val">8 / 5</span></div>
+                            <input type="range" min="3" max="15" value="8" id="shrimp-slider" class="w-full accent-red-500" oninput="updateProgress()">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 4. Таймлайн -->
+                <div class="bg-zinc-900 rounded-3xl p-8 col-span-2 md:col-span-1 xl:col-span-3">
+                    <h3 class="text-xl font-semibold mb-6">Прогресс на 12 недель</h3>
+                    <div class="flex justify-between text-xs text-zinc-400 mb-4">
+                        <div>Неделя 1</div><div>Неделя 4</div><div>Неделя 8</div><div>Неделя 12</div>
+                    </div>
+                    <div class="h-2 bg-zinc-800 rounded-3xl relative">
+                        <div class="absolute h-2 bg-gradient-to-r from-green-400 to-red-500 rounded-3xl" style="width: 65%"></div>
+                        <div class="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-2xl shadow-xl flex items-center justify-center left-[25%]">🥋</div>
+                        <div class="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-2xl shadow-xl flex items-center justify-center left-[50%]">🧘</div>
+                        <div class="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-2xl shadow-xl flex items-center justify-center left-[75%]">⚡</div>
+                    </div>
+                    <div class="grid grid-cols-4 text-center text-sm mt-6">
+                        <div>Muscle-up</div>
+                        <div>Планш</div>
+                        <div>Полный шпагат</div>
+                        <div>Мощные CQC</div>
+                    </div>
+                </div>
+                
+                <!-- 5. Тепловая карта -->
+                <div class="bg-zinc-900 rounded-3xl p-8">
+                    <h3 class="text-xl font-semibold mb-6">Тепловая карта тренировок</h3>
+                    <div class="grid grid-cols-7 gap-1 text-xs" id="heatmap"></div>
+                </div>
+                
+                <!-- 6. Объём тренировок -->
+                <div class="bg-zinc-900 rounded-3xl p-8">
+                    <h3 class="text-xl font-semibold mb-6">Объём по дням</h3>
+                    <canvas id="chartVolume" class="h-64"></canvas>
+                </div>
+                
+                <!-- 7. Мышечная карта -->
+                <div class="bg-zinc-900 rounded-3xl p-8 flex flex-col items-center">
+                    <h3 class="text-xl font-semibold mb-6">Мышцы, которые работают сегодня</h3>
+                    <svg width="280" height="320" viewBox="0 0 280 320" id="muscle-svg" class="drop-shadow-2xl"></svg>
+                    <p class="text-xs text-zinc-400 mt-4 text-center">Кликни на день в расписании — карта обновится</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- МОДАЛЬНОЕ ОКНО ДЛЯ ДНЯ -->
+    <div id="day-modal" onclick="if(event.target.id==='day-modal')hideModal()" class="hidden fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center">
+        <div class="bg-zinc-900 rounded-3xl max-w-2xl w-full mx-4 modal overflow-hidden" onclick="event.stopImmediatePropagation()">
+            <div class="px-8 pt-6 pb-4 border-b border-zinc-700 flex justify-between">
+                <div id="modal-title" class="text-2xl font-bold"></div>
+                <button onclick="hideModal()" class="text-3xl leading-none">×</button>
+            </div>
+            <div id="modal-body" class="p-8 max-h-[70vh] overflow-auto"></div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-black py-12 border-t border-zinc-800">
+        <div class="max-w-7xl mx-auto px-6 text-center text-zinc-500 text-sm">
+            План создан специально для Нурлана • 17 апреля 2026<br>
+            Обновляй прогресс каждую неделю и становись сильнее 🥋
+        </div>
+    </footer>
+
+    <script>
+        // Tailwind config
+        function initTailwind() {
+            tailwind.config = {
+                content: [],
+                theme: { extend: {} }
+            }
+        }
+
+        // Данные тренировок
+        const workouts = {
+            1: {
+                title: "День 1 — Вторник: Калистеника + Изометрия",
+                time: "55–65 мин",
+                exercises: [
+                    { name: "Подтягивания", sets: "4 × 6–10" },
+                    { name: "Отжимания (алмазные/обычные)", sets: "4 × 8–12" },
+                    { name: "Приседания-пистолет / shrimp squat", sets: "4 × 6–8 на ногу" },
+                    { name: "L-sit", sets: "4 × 20–40 сек" },
+                    { name: "Hollow body hold", sets: "4 × 30–45 сек" },
+                    { name: "Handstand у стены", sets: "4 × 20–40 сек" }
+                ]
+            },
+            2: {
+                title: "День 2 — Четверг: Взрывная сила",
+                time: "55–65 мин",
+                exercises: [
+                    { name: "Взрывные отжимания с хлопком", sets: "4 × 6–8" },
+                    { name: "Jump squats", sets: "4 × 8–10" },
+                    { name: "Взрывные подтягивания", sets: "4 × 4–6" },
+                    { name: "Burpees", sets: "3 × 8" },
+                    { name: "Взрывные фронт-кики / колени с прыжком", sets: "3 × 10 на ногу" }
+                ]
+            },
+            3: {
+                title: "День 3 — Суббота: Микс боевых искусств + Гибкость",
+                time: "65–70 мин",
+                exercises: [
+                    { name: "Shadow boxing (Каратэ + Муай-тай)", sets: "5 раундов × 3 мин" },
+                    { name: "High roundhouse kick + teep", sets: "4 × 10–12 на сторону" },
+                    { name: "Муай-тай колени в воздухе", sets: "3 × 12 на сторону" },
+                    { name: "Palm strike → Elbow → Knee (Крав-мага/CQC)", sets: "4 × 8–10" },
+                    { name: "Shadow CQC bursts", sets: "3 × 30 сек" },
+                    { name: "Shrimp escape + technical stand-up (BJJ)", sets: "3 × 10–12 на сторону" },
+                    { name: "Bridge + hip escape", sets: "3 × 8" },
+                    { name: "Динамическая гибкость и шпагат", sets: "15 мин" }
+                ]
+            },
+            4: {
+                title: "День 4 — Воскресенье: Recovery + Мобильность",
+                time: "50–60 мин",
+                exercises: [
+                    { name: "Полная растяжка бёдер, плеч, спины", sets: "20 мин" },
+                    { name: "Лёгкий circuit (3 круга)", sets: "Отжимания 10 + Приседания 12/ногу + Подтягивания 6–8 + Планка 45 сек" }
+                ]
+            }
+        }
+
+        // Заполняем расписание
+        function renderWeek() {
+            const container = document.getElementById('week-grid')
+            const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+            let html = ''
+            days.forEach((day, i) => {
+                const isTraining = [1,3,5,6].includes(i) // Вт=1, Чт=3, Сб=5, Вс=6
+                html += `
+                <div onclick="\( {isTraining ? `openDayModal( \){i===1?1:i===3?2:i===5?3:4})` : ''}" 
+                     class="bg-zinc-900 rounded-3xl p-6 text-center cursor-pointer hover:scale-105 transition ${isTraining ? 'border-2 border-red-500' : 'opacity-60'}">
+                    <div class="text-sm text-zinc-400">${day}</div>
+                    <div class="text-3xl font-bold mt-1">${isTraining ? 'Тренировка' : 'Отдых'}</div>
+                    ${isTraining ? `<div class="text-xs bg-red-500 text-black inline-block px-3 py-1 rounded-2xl mt-4">55–70 мин</div>` : ''}
+                </div>`
+            })
+            container.innerHTML = html
+        }
+
+        // Показ дня в табах
+        function showDay(dayNum) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'border-b-2', 'border-red-500'))
+            event.target.classList.add('active', 'border-b-2', 'border-red-500')
+            
+            const data = workouts[dayNum]
+            let html = `<h3 class="text-3xl font-bold mb-6">${data.title}</h3>`
+            html += `<p class="text-zinc-400 mb-8">Время: ${data.time}</p>`
+            html += `<div class="space-y-6">`
+            
+            data.exercises.forEach((ex, idx) => {
+                html += `
+                <div class="flex items-center justify-between bg-black/50 rounded-2xl p-5">
+                    <div>
+                        <div class="font-medium">${ex.name}</div>
+                        <div class="text-zinc-400 text-sm">${ex.sets}</div>
+                    </div>
+                    <input type="checkbox" id="check-\( {dayNum}- \){idx}" 
+                           class="w-8 h-8 accent-red-500" 
+                           onchange="saveCheck(${dayNum}, ${idx})">
+                </div>`
+            })
+            html += `</div>`
+            document.getElementById('day-content').innerHTML = html
+            loadChecks(dayNum)
+        }
+
+        // Модальное окно дня
+        function openDayModal(dayNum) {
+            const data = workouts[dayNum]
+            document.getElementById('modal-title').innerHTML = data.title
+            let html = `<p class="text-zinc-400 mb-8">Время: ${data.time}</p>`
+            html += `<div class="space-y-6">`
+            data.exercises.forEach((ex, idx) => {
+                html += `
+                <div class="flex justify-between items-center">
+                    <div>
+                        <div class="font-medium">${ex.name}</div>
+                        <div class="text-zinc-400">${ex.sets}</div>
+                    </div>
+                    <input type="checkbox" id="modal-check-\( {dayNum}- \){idx}" 
+                           class="w-8 h-8 accent-red-500" 
+                           onchange="saveCheck(${dayNum}, ${idx}, true)">
+                </div>`
+            })
+            html += `</div>`
+            document.getElementById('modal-body').innerHTML = html
+            document.getElementById('day-modal').classList.remove('hidden')
+            loadChecks(dayNum, true)
+        }
+
+        function hideModal() {
+            document.getElementById('day-modal').classList.add('hidden')
+        }
+
+        // Сохранение чекбоксов
+        function saveCheck(day, idx, isModal = false) {
+            const key = `check_\( {day}_ \){idx}`
+            const checked = isModal 
+                ? document.getElementById(`modal-check-\( {day}- \){idx}`).checked 
+                : document.getElementById(`check-\( {day}- \){idx}`).checked
+            localStorage.setItem(key, checked)
+        }
+
+        function loadChecks(day, isModal = false) {
+            const data = workouts[day]
+            data.exercises.forEach((_, idx) => {
+                const key = `check_\( {day}_ \){idx}`
+                const saved = localStorage.getItem(key) === 'true'
+                const id = isModal ? `modal-check-\( {day}- \){idx}` : `check-\( {day}- \){idx}`
+                const el = document.getElementById(id)
+                if (el) el.checked = saved
+            })
+        }
+
+        // Графики
+        let chart1Instance, chart2Instance, volumeChart
+
+        function createCharts() {
+            // 1. Что развиваем
+            const ctx1 = document.getElementById('chart1')
+            chart1Instance = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Калистеника', 'Взрывная сила', 'Боевые искусства', 'Гибкость'],
+                    datasets: [{ data: [25, 25, 30, 20], backgroundColor: ['#22ff88', '#ff2266', '#ff8800', '#4488ff'] }]
+                },
+                options: { plugins: { legend: { position: 'bottom', labels: { color: '#fff' } } } }
+            })
+
+            // 2. Микс боевых
+            const ctx2 = document.getElementById('chart2')
+            chart2Instance = new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: ['Каратэ', 'Муай-тай', 'BJJ', 'Крав/CQC/Рукопашка'],
+                    datasets: [{ data: [30, 30, 20, 20], backgroundColor: ['#22ff88', '#ff2266', '#4488ff', '#ffaa00'] }]
+                },
+                options: { plugins: { legend: { position: 'bottom', labels: { color: '#fff' } } } }
+            })
+
+            // Объём по дням
+            const ctxVol = document.getElementById('chartVolume')
+            volumeChart = new Chart(ctxVol, {
+                type: 'bar',
+                data: {
+                    labels: ['Вт', 'Чт', 'Сб', 'Вс'],
+                    datasets: [{
+                        label: 'Минут на тренировку',
+                        data: [60, 60, 70, 55],
+                        backgroundColor: '#ff2266',
+                        borderRadius: 8
+                    }]
+                },
+                options: { scales: { y: { ticks: { color: '#fff' } } } }
+            })
+        }
+
+        // Простая SVG мышечная карта
+        function renderMuscleMap() {
+            const svg = document.getElementById('muscle-svg')
+            svg.innerHTML = `
+            <rect x="90" y="30" width="100" height="120" rx="10" fill="#22ff88" fill-opacity="0.2" stroke="#22ff88" stroke-width="12"/>
+            <circle cx="140" cy="80" r="25" fill="#22ff88" fill-opacity="0.3"/>
+            <rect x="70" y="160" width="40" height="90" rx="8" fill="#ff2266" fill-opacity="0.3" stroke="#ff2266" stroke-width="10"/>
+            <rect x="170" y="160" width="40" height="90" rx="8" fill="#ff2266" fill-opacity="0.3" stroke="#ff2266" stroke-width="10"/>
+            <text x="140" y="270" text-anchor="middle" fill="#fff" font-size="18">Сегодня: всё тело + бёдра</text>
+            `
+        }
+
+        // Тепловая карта (пример за апрель)
+        function renderHeatmap() {
+            const container = document.getElementById('heatmap')
+            let html = ''
+            for (let i = 0; i < 35; i++) {
+                const done = Math.random() > 0.4
+                html += `<div class="heatmap-cell w-8 h-8 rounded-xl \( {done ? 'bg-green-400' : 'bg-zinc-800'} flex items-center justify-center text-[10px]"> \){i+1}</div>`
+            }
+            container.innerHTML = html
+        }
+
+        // Прогресс-бары
+        function updateProgress() {
+            document.getElementById('pull-val').textContent = document.getElementById('pull-slider').value + ' / 15'
+            document.getElementById('lsit-val').textContent = document.getElementById('lsit-slider').value + ' / 60'
+            document.getElementById('kick-val').textContent = document.getElementById('kick-slider').value + ' / 180'
+            document.getElementById('shrimp-val').textContent = document.getElementById('shrimp-slider').value + ' / 5'
+            localStorage.setItem('progressData', JSON.stringify({
+                pull: document.getElementById('pull-slider').value,
+                lsit: document.getElementById('lsit-slider').value,
+                kick: document.getElementById('kick-slider').value,
+                shrimp: document.getElementById('shrimp-slider').value
+            }))
+        }
+
+        // Таймер shadow boxing (вызывается из кнопки в модалке, но можно добавить отдельно)
+        function startShadowTimer() {
+            alert('Таймер shadow boxing запущен на 3 минуты (в реальном приложении здесь будет полноценный таймер с звуком)')
+        }
+
+        // Кнопка "Начать тренировку"
+        function startWorkout() {
+            alert('🚀 Тренировка запущена! Сегодня Четверг — День 2 (Взрывная сила). Удачи, Нурлан!')
+            // Можно открыть модалку Дня 2
+            openDayModal(2)
+        }
+
+        function downloadPDF() {
+            alert('📄 PDF с планом скачивается... (в реальном коде здесь был бы jsPDF)')
+        }
+
+        // Инициализация всего
+        window.onload = function() {
+            initTailwind()
+            renderWeek()
+            showDay(1) // открываем первый день по умолчанию
+            createCharts()
+            renderHeatmap()
+            renderMuscleMap()
+            
+            // Загрузка сохранённого прогресса
+            const saved = JSON.parse(localStorage.getItem('progressData') || '{}')
+            if (saved.pull) document.getElementById('pull-slider').value = saved.pull
+            if (saved.lsit) document.getElementById('lsit-slider').value = saved.lsit
+            if (saved.kick) document.getElementById('kick-slider').value = saved.kick
+            if (saved.shrimp) document.getElementById('shrimp-slider').value = saved.shrimp
+            updateProgress()
+            
+            console.log('%c✅ Полный интерактивный план Нурлана готов!', 'color:#22ff88; font-size:18px')
+        }
+    </script>
+</body>
+</html>
